@@ -33,8 +33,8 @@ jobs:
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
-          source: ./taskbox/storybook-static
-          destination: ./_site
+          source: ./taskbox/storybook-static-v1
+          destination: ./_site/v1
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
 
