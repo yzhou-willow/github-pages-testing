@@ -22,7 +22,7 @@ jobs:
       - run: ls -la
 
       - name: Save folder as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: site-folder
           path: ./sites
@@ -42,7 +42,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: site-folder
           path: ./sites
@@ -53,5 +53,6 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
+          git status
           git commit -m "Update site folder"
-          git push "https://yzhou-willow:${{ secrets.GITHUB_TOKEN }}@github.com/yzhou-willow/storybook-pages.git"
+          git push "https://yzhou-willow:${{ secrets.GITHUB_TOKEN }}@github.com/yzhou-willow/storybook-pages.git" --set-upstream "main"
