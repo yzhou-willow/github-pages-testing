@@ -51,7 +51,7 @@ jobs:
       - name: Commit changes to storybook-pages with github authorization
         run: |
           git config --global user.name 'yzhou-willow'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --global user.email 'yzhou-willow@test.com'
           git add .
           git commit -m "Update site folder"
           # git remote set-url origin https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git
