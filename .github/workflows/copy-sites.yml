@@ -45,6 +45,7 @@ jobs:
         run: |
           git clone https://${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git
           cd storybook-pages
+          ls -la
 
       - name: Download artifact
         uses: actions/download-artifact@v3
