@@ -50,9 +50,8 @@ jobs:
 
       - name: Commit changes to storybook-pages with github authorization
         run: |
-          git config --global user.name 'github-actions[bot]'
+          git config --global user.name 'yzhou-willow'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
-          git status
           git commit -m "Update site folder"
           git push "https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git" --set-upstream "main"
