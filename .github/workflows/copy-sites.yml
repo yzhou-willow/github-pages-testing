@@ -56,5 +56,5 @@ jobs:
           git commit -m "Update site folder"
           # git remote set-url origin https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git
           echo "https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git"
-          git remote set-url origin https://yzhou-willow:wrong_token@github.com/yzhou-willow/storybook-pages.git
+          git remote set-url origin https://yzhou-willow:@github.com/yzhou-willow/storybook-pages.git
           git push
