@@ -8,11 +8,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+# Sets permissions of the GITHUB_TOKEN to allow commit and push
+
+permissions: write-all
 
 jobs:
   # upload sites folder as artifact
@@ -49,7 +47,7 @@ jobs:
           path: ./sites
       - run: ls -la
 
-      - name: Commit changes
+      - name: Commit changes to storybook-pages with github authorization
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
