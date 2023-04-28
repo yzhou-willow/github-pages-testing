@@ -51,11 +51,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: site-folder
-          path: ./sites
+          path: ./storybook-pages/sites
       - run: ls -la
 
       - name: Commit changes to storybook-pages with github authorization
         run: |
+          cd storybook-pages
           git config --global user.name 'yzhou-willow'
           git config --global user.email 'yzhou-willow@test.com'
           git add .
