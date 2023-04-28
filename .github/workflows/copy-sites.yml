@@ -47,6 +47,7 @@ jobs:
         with:
           name: site-folder
           path: ./sites
+      - run: ls -la
 
       - name: Commit changes
         run: |
