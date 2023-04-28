@@ -25,7 +25,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: site-folder
-          path: ./sites
+          path: ./taskbox/storybook-static
 
   get-aritifact:
     runs-on: ubuntu-latest
@@ -51,7 +51,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: site-folder
-          path: ./storybook-pages/sites
+          path: ./storybook-pages/sites/storybook-static-v4
       - run: ls -la
 
       - name: Commit changes to storybook-pages with github authorization
