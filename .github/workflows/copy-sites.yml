@@ -35,11 +35,16 @@ jobs:
       # log github workspace
       - run: echo ${{ github.workspace }}
 
+      # - name: Checkout repo storybook-pages
+      #   uses: actions/checkout@v3
+      #   with:
+      #     repository: yzhou-willow/storybook-pages
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout repo storybook-pages
-        uses: actions/checkout@v3
-        with:
-          repository: yzhou-willow/storybook-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone https://${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git
+          cd storybook-pages
 
       - name: Download artifact
         uses: actions/download-artifact@v3
@@ -55,6 +60,6 @@ jobs:
           git add .
           git commit -m "Update site folder"
           # git remote set-url origin https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git
-          echo "https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git"
-          git remote set-url origin https://${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git
+          #echo "https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git"
+          #git remote set-url origin https://${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git
           git push
