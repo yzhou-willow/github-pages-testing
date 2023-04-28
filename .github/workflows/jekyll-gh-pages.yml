@@ -37,8 +37,8 @@ jobs:
         with:
           source: ./taskbox/storybook-static-v1
           destination: ./sites/v1
-      - name: list our directory
-        run: ls -la
+      - name: list out sites directory
+        run: ls -la ./sites
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
