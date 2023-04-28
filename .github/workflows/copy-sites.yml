@@ -19,6 +19,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - run: ls -la
 
       - name: Save folder as artifact
         uses: actions/upload-artifact@v2
