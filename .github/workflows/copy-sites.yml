@@ -54,4 +54,5 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
           git commit -m "Update site folder"
-          git push "https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git" --set-upstream "main"
+          echo "GIT_CMD_REPOSITORY=https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git" >> $GITHUB_ENV
+          git push "${{env.GIT_CMD_REPOSITORY}}" --set-upstream "main"
