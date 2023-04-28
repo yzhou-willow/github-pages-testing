@@ -39,8 +39,7 @@ jobs:
       - name: Checkout repo storybook-pages
         uses: actions/checkout@v3
         with:
-          repository: ${{ github.repository }}
-          path: ./storybook-pages
+          repository: yzhou-willow/storybook-pages
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download artifact
