@@ -36,11 +36,13 @@ jobs:
         uses: actions/jekyll-build-pages@v1
         with:
           source: ./taskbox/storybook-static-v1
-          destination: yzhou-willow/storybook-pages/_site/v1
+          destination: ./sites/v1
       - name: list our directory
         run: ls -la
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./sites
 
   # Deployment job
   deploy:
