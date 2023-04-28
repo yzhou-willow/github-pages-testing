@@ -1,5 +1,4 @@
-# Sample workflow for building and deploying a Jekyll site to GitHub Pages
-name: Deploy Jekyll with GitHub Pages dependencies preinstalled
+name: Commit sites to storybook-pages
 
 on:
   # Runs on pushes targeting the default branch
@@ -33,8 +32,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: upload-sites
     steps:
+      - run: echo ${{ github.repository }}
+      # log github workspace
+      - run: echo ${{ github.workspace }}
+
       - name: Checkout repo storybook-pages
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ github.repository }}
           path: ./storybook-pages
