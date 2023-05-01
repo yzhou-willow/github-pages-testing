@@ -57,11 +57,6 @@ jobs:
           path: ./storybook-pages/sites/${{env.NEW_VERSION}}}
       - run: ls -la
 
-      - name: Update latest version path in index.html
-        run: |
-          sed -i '' -e 's/url=.*">/url=.\${{env.NEW_VERSION}}">/g' index.html
-          sed -i '' -e 's/<a href=\(.*\)>/<a href=".\/${{env.NEW_VERSION}}">/g' index.html
-
       - name: Commit changes to storybook-pages with github authorization
         run: |
           cd storybook-pages
@@ -72,4 +67,12 @@ jobs:
           # git remote set-url origin https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git
           #echo "https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git"
           #git remote set-url origin https://${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git
+
+      - name: Update latest version path in index.html
+        run: |
+          sed -i '' -e 's/url=.*">/url=.\${{env.NEW_VERSION}}">/g' index.html
+          sed -i '' -e 's/<a href=\(.*\)>/<a href=".\/${{env.NEW_VERSION}}">/g' index.html
+
+          git add .
+          git commit -m "Update latest version path in index.html"
           git push
