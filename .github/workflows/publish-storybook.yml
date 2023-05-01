@@ -119,9 +119,9 @@ jobs:
             exit 1
           fi
 
-      - name: Commit and push changes
-        run: |
-          cd ../
+          # - name: Commit and push changes
+          #   run: |
+          # cd ../
           ls -la
           git config --list
           git add .
