@@ -30,7 +30,7 @@ jobs:
       - run: ls -la
 
       - run: |
-          echo "test=tttt" >> $GITHUB_ENV
+          echo "test=tttt" >> "$GITHUB_ENV"
           echo "log test: $test"
 
       - name: Save folder as artifact
@@ -83,7 +83,7 @@ jobs:
           cd storybook-pages/sites
           ls -la
 
-          echo "test2=tttt" >> $GITHUB_ENV
+          echo "test2=tttt" >> "$GITHUB_ENV"
           echo "log test2: $test2"
 
           # get last version
