@@ -75,7 +75,7 @@ jobs:
       - name: Update latest version path in index.html
         run: |
           ls -la
-          cd sites
+          cd storybook-pages/sites
           sed -i '' -e 's/url=.*">/url=.\${{env.NEW_VERSION}}">/g' index.html
           sed -i '' -e 's/<a href=\(.*\)>/<a href=".\/${{env.NEW_VERSION}}">/g' index.html
 
