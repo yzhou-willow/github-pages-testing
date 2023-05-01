@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  new_version: "v5"
+  new_version: "v6"
   last_version: test_last_version
 
 # Sets permissions of the GITHUB_TOKEN to allow commit and push
