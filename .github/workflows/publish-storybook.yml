@@ -120,6 +120,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          git config --list
           git add .
           git commit -m "Update latest version path in index.html"
           git push
