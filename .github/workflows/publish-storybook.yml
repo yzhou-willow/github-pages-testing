@@ -117,5 +117,5 @@ jobs:
           git config --list
 
           git add .
-          git commit -m "Add new version folder and update latest version path in index.html"
+          git commit -m "Add new version ${{ env.new_version }} folder and update latest version path in index.html"
           git push
