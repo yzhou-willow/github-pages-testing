@@ -9,8 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  new_version: "v7"
-  last_version: test_last_version
+  new_version: "v8"
 
 # Sets permissions of the GITHUB_TOKEN to allow commit and push
 
@@ -29,11 +28,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - run: ls -la
-
-      - run: |
-          echo "test=tttt" >> "$GITHUB_ENV"
-      - run: |
-          echo 'log test: ${{ env.test }}'
 
       - name: Save folder as artifact
         uses: actions/upload-artifact@v3
@@ -56,30 +50,18 @@ jobs:
           token: ${{ secrets.PAT_FOR_STORYBOOK }}
           persist-credentials: true
 
-      - name: Checkout repo storybook-pages
-        run: |
-          # git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/yzhou-willow/storybook-pages.git
-          # cd storybook-pages
-          ls -la
-
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
           name: site-folder
           path: ./sites/${{env.new_version}}
+
       - run: ls -la
 
-      - name: Commit changes to storybook-pages with github authorization
+      - name: Update sites folder
         run: |
           # cd storybook-pages
-          git config --global user.name 'yzhou-willow'
-          git config --list
           git add .
-          git commit -m "Update site folder"
-          # git remote set-url origin https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git
-          #echo "https://yzhou-willow:${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git"
-          #git remote set-url origin https://${{ secrets.PAT_FOR_STORYBOOK }}@github.com/yzhou-willow/storybook-pages.git
-          git push
 
       - name: Update latest version path in index.html
         run: |
@@ -93,8 +75,10 @@ jobs:
           end='">'
           pattern="${start}\([^${end}]*\)${end}"
           version=$(sed -n "s#${pattern}#\1#p" index.html)
+
           # trim spaces
           trimed_version=${version##*[[:space:]]}
+
           # save trimed_version to env variable
           echo "last_version=$trimed_version"  >> "$GITHUB_ENV"
 
@@ -123,16 +107,15 @@ jobs:
             # exit 1
           fi
 
-      - run: |
-          git config --global user.name 'yzhou-willow'
-          git config --global user.email 'yzhou-willow@test.com'
-          git config --list
-
       - name: Commit and push changes
         run: |
           # cd ../
           ls -la
 
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --list
+
           git add .
-          git commit -m "Update latest version path in index.html"
+          git commit -m "Add new version folder and update latest version path in index.html"
           git push
