@@ -88,20 +88,26 @@ jobs:
           start='<meta http-equiv="refresh" content="0; url=./'
           end='">'
           pattern="${start}\([^${end}]*\)${end}"
-          echo "last_version=$(sed -n "s#${pattern}#\1#p" index.html)" >> "$GITHUB_ENV"
+          version=$(sed -n "s#${pattern}#\1#p" index.html)
+          # trim spaces
+          trimed_version=${version##*[[:space:]]}
+          # save trimed_version to env variable
+          echo "last_version=$trimed_version"  >> "$GITHUB_ENV"
 
-      # env variable set up and get must be in seperate steps,
+      # env variable set and get must be in seperate steps,
       # otherwise it cannot read the value
       - run: |
           if [ -z "${{ env.last_version }}" ]; then
             echo "Error: No matched previous version found"
-            # exit 1
+            # exit 1           
           fi
 
       - name: Update latest version path in index.html
         run: |
           echo "log: ${{ env.last_version }}"
-          echo "new version`: ${{ env.new_version }}"
+          echo "new version: ${{ env.new_version }}"
+          cd storybook-pages/sites
+          ls -la
           sed -i 's/${{ env.last_version }}/${{env.new_version}}/g' index.html
 
           if [[ -n $(git status -s index.html) ]]; then
