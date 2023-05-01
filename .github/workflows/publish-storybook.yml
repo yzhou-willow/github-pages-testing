@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  NEW_VERSION: "v5"
+  new_version: "v5"
 
 # Sets permissions of the GITHUB_TOKEN to allow commit and push
 
@@ -59,7 +59,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: site-folder
-          path: ./storybook-pages/sites/${{env.NEW_VERSION}}
+          path: ./storybook-pages/sites/${{env.new_version}}
       - run: ls -la
 
       - name: Commit changes to storybook-pages with github authorization
@@ -90,12 +90,12 @@ jobs:
             echo "Error: No matched previous version found"
             exit 1
           else
-            echo "PREV_VERSION=$version" >> $GITHUB_ENV
+            echo "last_version=$(version)" >> $GITHUB_ENV
           fi
 
           # replace latest version path
-          echo "log: ${{env.PREV_VERSION}}"
-          sed -i '' -e 's/${{env.PREV_VERSION}}/${{env.NEW_VERSION}}/g' index.html
+          echo "log: ${{env.last_version}}"
+          sed -i '' -e 's/${{env.last_version}}/${{env.new_version}}/g' index.html
 
           if [[ -n $(git status -s index.html) ]]; then
             echo "index.html updated scuccessfully"
