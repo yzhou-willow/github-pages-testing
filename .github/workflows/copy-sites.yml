@@ -58,7 +58,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: site-folder
-          path: ./storybook-pages/sites/${{env.NEW_VERSION}}}
+          path: ./storybook-pages/sites/${{env.NEW_VERSION}}
       - run: ls -la
 
       - name: Commit changes to storybook-pages with github authorization
@@ -88,7 +88,8 @@ jobs:
             echo "Error: No matched previous version found"
             exit 1
           else
-            version=${version##*[[:space:]]} # trim leading spaces
+            # trim leading and trailing whitespace characters
+            version=${version##*[[:space:]]}
             echo "PREV_VERSION=$version" >> $GITHUB_ENV
           fi
 
