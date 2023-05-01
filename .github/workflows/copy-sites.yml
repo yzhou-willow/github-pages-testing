@@ -76,6 +76,7 @@ jobs:
         run: |
           ls -la
           cd storybook-pages/sites
+          ls -la
 
           # get last version
           start='<meta http-equiv="refresh" content="0; url=./'
@@ -85,15 +86,16 @@ jobs:
 
           if [ -z "$version" ]; then
             echo "Error: No matched previous version found"
+            exit 1
           else
-            version=${version##*[[:space:]]}
-            echo "Previous version: $version"
+            version=${version##*[[:space:]]} # trim leading spaces
             echo "PREV_VERSION=$version" >> $GITHUB_ENV
           fi
 
-
+          # replace latest version path
           sed -i '' -e 's/${{env.PREV_VERSION}}/${{env.NEW_VERSION}}/g' index.html
 
+          # commit changes
           git add .
           git commit -m "Update latest version path in index.html"
           git push
