@@ -30,7 +30,8 @@ jobs:
       - run: ls -la
 
       - run: echo "test=tttt" >> "$GITHUB_ENV"
-      - run: echo "log test: ${{ env.test }}"
+      - run: |
+          echo 'log test: ${{ env.test }}'
 
       - name: Save folder as artifact
         uses: actions/upload-artifact@v3
