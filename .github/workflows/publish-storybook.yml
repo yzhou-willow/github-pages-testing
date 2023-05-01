@@ -90,12 +90,11 @@ jobs:
             echo "Error: No matched previous version found"
             exit 1
           else
-            # trim leading and trailing whitespace characters
-            # version=${version##*[[:space:]]}
             echo "PREV_VERSION=$version" >> $GITHUB_ENV
           fi
 
           # replace latest version path
+          echo "log: ${{env.PREV_VERSION}}"
           sed -i '' -e 's/${{env.PREV_VERSION}}/${{env.NEW_VERSION}}/g' index.html
 
           if [[ -n $(git status -s index.html) ]]; then
