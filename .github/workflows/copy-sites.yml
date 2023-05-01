@@ -8,6 +8,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  NEW_VERSION: "v5"
+
 # Sets permissions of the GITHUB_TOKEN to allow commit and push
 
 permissions: write-all
@@ -51,8 +54,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: site-folder
-          path: ./storybook-pages/sites/storybook-static-v4
+          path: ./storybook-pages/sites/${{env.NEW_VERSION}}}
       - run: ls -la
+
+      - name: Update latest version path in index.html
+        run: |
+          sed -i '' -e 's/url=.*">/url=.\${{env.NEW_VERSION}}">/g' index.html
+          sed -i '' -e 's/<a href=\(.*\)>/<a href=".\/${{env.NEW_VERSION}}">/g' index.html
 
       - name: Commit changes to storybook-pages with github authorization
         run: |
