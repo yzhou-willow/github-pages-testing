@@ -76,8 +76,19 @@ jobs:
         run: |
           ls -la
           cd storybook-pages/sites
-          sed -i '' -e 's/url=.*">/url=.\${{env.NEW_VERSION}}">/g' index.html
-          sed -i '' -e 's/<a href=\(.*\)>/<a href=".\/${{env.NEW_VERSION}}">/g' index.html
+          if grep -q 'content="0; url=./' index.html; then
+            sed -i '' -e 's/\(content="0; url=\.\/\).*\(">\)/\1${{env.NEW_VERSION}}\2/g' index.html
+            echo "Replace auto redirect URL successful"
+          else
+            echo "No auto redirect string match found"
+            exit 1
+          fi
+
+          if sed -i '' -e 's\(<a href=".\/\)\(.[^">]*\)\(>\)\1${{env.NEW_VERSION}}\3/g' index.html ; then
+            echo "Replace anchor URL successfully"
+          else
+            echo "No anchor string match found"
+          fi
 
           git add .
           git commit -m "Update latest version path in index.html"
