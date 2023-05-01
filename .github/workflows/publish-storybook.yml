@@ -20,6 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # we could make it only deploy a newer storybook for major/minor version release
   # upload sites folder as artifact
   upload-sites:
     runs-on: ubuntu-latest
@@ -95,6 +96,13 @@ jobs:
 
           # replace latest version path
           sed -i '' -e 's/${{env.PREV_VERSION}}/${{env.NEW_VERSION}}/g' index.html
+
+          if [[ -n $(git status -s index.html) ]]; then
+            echo "index.html updated scuccessfully"
+          else
+            echo "Error: index.html not updated"
+            exit 1
+          fi
 
           # commit changes
           git add .
