@@ -21,8 +21,8 @@ concurrency:
 
 jobs:
   # we could make it only deploy a newer storybook for major/minor version release
-  # upload sites folder as artifact
-  upload-sites:
+  # upload new site folder as artifact
+  upload-site:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,12 +35,11 @@ jobs:
           name: site-folder
           path: ./taskbox/storybook-static
 
-  get-aritifact:
+  download-site:
     runs-on: ubuntu-latest
-    needs: upload-sites
+    needs: upload-site
     steps:
       - run: echo ${{ github.repository }}
-      # log github workspace
       - run: echo ${{ github.workspace }}
 
       - name: Checkout repo storybook-pages
@@ -56,17 +55,9 @@ jobs:
           name: site-folder
           path: ./sites/${{env.new_version}}
 
-      - run: ls -la
-
-      - name: Update sites folder
-        run: |
-          # cd storybook-pages
-          git add .
-
       - name: Update latest version path in index.html
         run: |
           ls -la
-          # cd storybook-pages/sites
           cd sites
           ls -la
 
@@ -84,17 +75,17 @@ jobs:
 
       # env variable set and get must be in seperate steps,
       # otherwise it cannot read the value
-      - run: |
+      - name: Check if last_version is set
+        run: |
           if [ -z "${{ env.last_version }}" ]; then
             echo "Error: No matched previous version found"
-            # exit 1           
+            exit 1           
           fi
 
       - name: Update latest version path in index.html
         run: |
           echo "last version: ${{ env.last_version }}"
           echo "new version: ${{ env.new_version }}"
-          # cd storybook-pages/sites
           cd sites
           ls -la
           sed -i 's/${{ env.last_version }}/${{env.new_version}}/g' index.html
@@ -104,12 +95,11 @@ jobs:
             echo "index.html updated scuccessfully"
           else
             echo "Error: index.html not updated"
-            # exit 1
+            exit 1
           fi
 
       - name: Commit and push changes
         run: |
-          # cd ../
           ls -la
 
           git config --global user.name 'github-actions[bot]'
