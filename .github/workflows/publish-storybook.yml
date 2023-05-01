@@ -90,15 +90,19 @@ jobs:
           pattern="${start}\([^${end}]*\)${end}"
           echo "last_version=$(sed -n "s#${pattern}#\1#p" index.html)" >> "$GITHUB_ENV"
 
-          if [ -z "$(last_version)" ]; then
+      # env variable set up and get must be in seperate steps,
+      # otherwise it cannot read the value
+      - run: |
+          if [ -z "${{ env.last_version }}" ]; then
             echo "Error: No matched previous version found"
             # exit 1
           fi
 
-          # replace latest version path
-          echo "log: $last_version"
-          echo "new version`: ${{env.new_version}}"
-          sed -i 's/${last_version}/${{env.new_version}}/g' index.html
+      - name: Update latest version path in index.html
+        run: |
+          echo "log: ${{ env.last_version }}"
+          echo "new version`: ${{ env.new_version }}"
+          sed -i 's/${{ env.last_version }}/${{env.new_version}}/g' index.html
 
           if [[ -n $(git status -s index.html) ]]; then
             echo "index.html updated scuccessfully"
