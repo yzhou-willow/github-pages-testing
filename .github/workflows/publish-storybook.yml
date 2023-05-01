@@ -29,7 +29,8 @@ jobs:
         uses: actions/checkout@v3
       - run: ls -la
 
-      - run: echo "test=tttt" >> "$GITHUB_ENV"
+      - run: |
+          echo "test=tttt" >> "$GITHUB_ENV"
       - run: |
           echo 'log test: ${{ env.test }}'
 
@@ -83,19 +84,13 @@ jobs:
           cd storybook-pages/sites
           ls -la
 
-          echo "action_state=yellow" >> "$GITHUB_ENV"
-          echo "why cannot see me: ${{ env.action_state }}"
-
-          echo "test2=tttt" >> "$GITHUB_ENV"
-          echo "log test2: ${{ env.test2 }}"
-
           # get last version
           start='<meta http-equiv="refresh" content="0; url=./'
           end='">'
           pattern="${start}\([^${end}]*\)${end}"
-          echo "last_version=$(sed -n "s#${pattern}#\1#p" index.html)"
+          echo "last_version=$(sed -n "s#${pattern}#\1#p" index.html)" >> "$GITHUB_ENV"
 
-          if [ -z "$last_version" ]; then
+          if [ -z "$(last_version)" ]; then
             echo "Error: No matched previous version found"
             # exit 1
           fi
