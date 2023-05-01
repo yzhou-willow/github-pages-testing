@@ -104,12 +104,13 @@ jobs:
 
       - name: Update latest version path in index.html
         run: |
-          echo "log: ${{ env.last_version }}"
+          echo "last version: ${{ env.last_version }}"
           echo "new version: ${{ env.new_version }}"
           cd storybook-pages/sites
           ls -la
           sed -i 's/${{ env.last_version }}/${{env.new_version}}/g' index.html
 
+          # check if index.html updated 
           if [[ -n $(git status -s index.html) ]]; then
             echo "index.html updated scuccessfully"
           else
@@ -117,7 +118,8 @@ jobs:
             exit 1
           fi
 
-          # commit changes
+      - name: Commit and push changes
+        run: |
           git add .
           git commit -m "Update latest version path in index.html"
           git push
