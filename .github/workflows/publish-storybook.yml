@@ -31,7 +31,7 @@ jobs:
 
       - run: |
           echo "test=tttt" >> "$GITHUB_ENV"
-          echo "log test: $test"
+          echo "log test: ${{env.test}}"
 
       - name: Save folder as artifact
         uses: actions/upload-artifact@v3
@@ -83,8 +83,11 @@ jobs:
           cd storybook-pages/sites
           ls -la
 
+          echo "action_state=yellow" >> "$GITHUB_ENV"
+          echo "why cannot see me: ${{ env.action_state }}"
+
           echo "test2=tttt" >> "$GITHUB_ENV"
-          echo "log test2: $test2"
+          echo "log test2: ${{ env.test2 }}"
 
           # get last version
           start='<meta http-equiv="refresh" content="0; url=./'
