@@ -92,7 +92,7 @@ jobs:
 
           # replace latest version path
           echo "log: ${{ env.last_version }}"
-          sed -i '' -e 's/${{ env.last_version }}/${{env.new_version}}/g' index.html
+          sed -i 's/${{ env.last_version }}/${{env.new_version}}/g' index.html
 
           if [[ -n $(git status -s index.html) ]]; then
             echo "index.html updated scuccessfully"
