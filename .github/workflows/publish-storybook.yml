@@ -79,6 +79,9 @@ jobs:
           cd storybook-pages/sites
           ls -la
 
+          echo "test=test" >> $GITHUB_ENV
+          echo "log test: ${{env.test}}"
+
           # get last version
           start='<meta http-equiv="refresh" content="0; url=./'
           end='">'
