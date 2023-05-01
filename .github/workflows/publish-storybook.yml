@@ -84,13 +84,14 @@ jobs:
           end='">'
           pattern="${start}\([^${end}]*\)${end}"
           version=$(sed -n "s#${pattern}#\1#p" index.html)
+          echo $version
 
           if [ -z "$version" ]; then
             echo "Error: No matched previous version found"
             exit 1
           else
             # trim leading and trailing whitespace characters
-            version=${version##*[[:space:]]}
+            # version=${version##*[[:space:]]}
             echo "PREV_VERSION=$version" >> $GITHUB_ENV
           fi
 
