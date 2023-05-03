@@ -26,6 +26,7 @@ on:
       PAT_FOR_STORYBOOK_PAGES:
         description: "PAT for StorybookPages repo"
         required: true
+env:
 
 jobs:
   reusable-job:
