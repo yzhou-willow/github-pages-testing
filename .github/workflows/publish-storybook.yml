@@ -16,7 +16,7 @@ env:
 permissions: write-all
 
 concurrency:
-  group: "update pages"
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -53,8 +53,10 @@ jobs:
       newer-version: ${{ needs.mock-build.outputs.new_version }}
 
   # download-site:
-  #   needs: upload-site
+  #   needs:
+  #     - upload-site
+  #     - mock-build
   #   permissions: write-all
   #   uses: ./.github/workflows/release.yml
   #   with:
-  #     new_version: "v9"
+  #     new_version: ${{ needs.mock-build.outputs.new_version }}
