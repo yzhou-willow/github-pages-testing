@@ -32,80 +32,11 @@ jobs:
       - name: Save folder as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: site-folder
+          name: storybook
           path: ./taskbox/storybook-static
 
   download-site:
-    runs-on: ubuntu-latest
     needs: upload-site
-    steps:
-      - run: echo ${{ github.repository }}
-      - run: echo ${{ github.workspace }}
-
-      - name: Checkout repo storybook-pages
-        uses: actions/checkout@v3
-        with:
-          repository: yzhou-willow/storybook-pages
-          token: ${{ secrets.FINE_GRAINED_PAT_FOR_STORYBOOK_PAGES }}
-          persist-credentials: true
-
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: site-folder
-          path: ./sites/${{env.new_version}}
-
-      - name: Update latest version path in index.html
-        run: |
-          ls -la
-          cd sites
-          ls -la
-
-          # get last version
-          start='<meta http-equiv="refresh" content="0; url=./'
-          end='">'
-          pattern="${start}\([^${end}]*\)${end}"
-          version=$(sed -n "s#${pattern}#\1#p" index.html)
-
-          # trim spaces
-          trimed_version=${version##*[[:space:]]}
-
-          # save trimed_version to env variable
-          echo "last_version=$trimed_version"  >> "$GITHUB_ENV"
-
-      # env variable set and get must be in seperate steps,
-      # otherwise it cannot read the value
-      - name: Check if last_version is set
-        run: |
-          if [ -z "${{ env.last_version }}" ]; then
-            echo "Error: No matched previous version found"
-            exit 1           
-          fi
-
-      - name: Update latest version path in index.html
-        run: |
-          echo "last version: ${{ env.last_version }}"
-          echo "new version: ${{ env.new_version }}"
-          cd sites
-          ls -la
-          sed -i 's/${{ env.last_version }}/${{env.new_version}}/g' index.html
-
-          # check if index.html updated 
-          if [[ -n $(git status -s index.html) ]]; then
-            echo "index.html updated scuccessfully"
-          else
-            echo "Error: index.html not updated"
-            exit 1
-          fi
-
-      - name: Commit and push changes
-        run: |
-          ls -la
-
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git config --list
-
-          git add .
-          git commit -m "Add new version ${{ env.new_version }} folder and update latest version path in index.html"
-          git push
+    uses: ./.github/workflows/commit-storybook-releases.yml
+    with:
+      new_version: ${{ env.new_version }}
