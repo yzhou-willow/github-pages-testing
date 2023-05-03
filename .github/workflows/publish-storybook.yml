@@ -41,7 +41,7 @@ jobs:
           path: ./taskbox/storybook-static
 
   call-workflow:
-    needs: [upload-site, mock-build]
+    needs: mock-build
     permissions: write-all
     uses: ./.github/workflows/reusable.yml
     with:
