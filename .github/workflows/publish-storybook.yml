@@ -42,7 +42,7 @@ jobs:
     uses: ./.github/workflows/reusable.yml
     with:
       who-to-greet: "@yzhou-willow"
-      newer-version: ${{ needs.upload-site.outputs.new_version }}}
+      newer-version: ${{ needs.upload-site.outputs.new_version }}
 
   # download-site:
   #   needs: upload-site
