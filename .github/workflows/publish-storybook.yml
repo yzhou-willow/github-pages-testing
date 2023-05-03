@@ -20,6 +20,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  mock-build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "new_version=${{ env.new_version }}" >> $GITHUB_OUTPUT
+
   # we could make it only deploy a newer storybook for major/minor version release
   # upload new site folder as artifact
   upload-site:
@@ -34,7 +39,6 @@ jobs:
         with:
           name: storybook
           path: ./taskbox/storybook-static
-      - run: echo "::set-output name=new_version::${{ env.new_version }}"
 
   call-workflow:
     needs: upload-site
@@ -42,7 +46,7 @@ jobs:
     uses: ./.github/workflows/reusable.yml
     with:
       who-to-greet: "@yzhou-willow"
-      newer-version: ${{ needs.upload-site.outputs.new_version }}
+      newer-version: ${{ needs.mock-build.outputs.new_version }}
 
   # download-site:
   #   needs: upload-site
