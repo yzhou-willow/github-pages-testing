@@ -50,7 +50,7 @@ jobs:
     uses: ./.github/workflows/reusable.yml
     with:
       who-to-greet: "jane"
-      newer-version: ${{ needs.mock-build.outputs.new_version }}
+      new-version: ${{ needs.mock-build.outputs.new_version }}
 
   # download-site:
   #   needs:
