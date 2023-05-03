@@ -34,6 +34,7 @@ jobs:
         with:
           name: storybook
           path: ./taskbox/storybook-static
+      - run: echo "::set-output name=new_version::${{ env.new_version }}"
 
   call-workflow:
     needs: upload-site
@@ -41,7 +42,7 @@ jobs:
     uses: ./.github/workflows/reusable.yml
     with:
       who-to-greet: "@yzhou-willow"
-      newer-version: ${{ env.new_version }}}
+      newer-version: ${{ needs.upload-site.outputs.new_version }}}
 
   # download-site:
   #   needs: upload-site
