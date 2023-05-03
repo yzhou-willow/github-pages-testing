@@ -1,0 +1,31 @@
+name: Reusable workflow
+on:
+  workflow_call:
+    inputs:
+      who-to-greet:
+        description: "Who to greet"
+        required: true
+        type: string
+        default: "World"
+      newer-version:
+        description: The version of the Storybook site to commit.
+        required: true
+        type: string
+        # default: "no-version"
+    outputs:
+      current-time:
+        description: "The time when greeting."
+        value: ${{ jobs.reusable-job.outputs.current-time }}
+
+jobs:
+  reusable-job:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Hello ${{ inputs.newer-version }}"
+
+      - name: Set time
+        id: time
+        run: echo "time=$(date)" >> $GITHUB_OUTPUT
+
+    outputs:
+      current-time: ${{ steps.time.outputs.time }}

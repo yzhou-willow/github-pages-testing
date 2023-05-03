@@ -1,5 +1,4 @@
 name: Commit new version Storybook site in StorybookReleases
-
 on:
   workflow_call:
     inputs:
@@ -7,6 +6,7 @@ on:
         description: The version of the Storybook site to commit.
         required: true
         type: string
+        default: "no-version"
       artifact-name:
         description: The name of the artifact to download the site from.
         required: false
@@ -18,10 +18,8 @@ on:
         type: string
         default: "/sites"
 
-env:
-  new_version: ${{inputs.new_version}}
-
-permissions: write-all
+# env:
+#   new_version: ${{inputs.new_version}}
 
 jobs:
   download-site-in-StyrobookReleases:
@@ -41,7 +39,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{inputs.artifact-name}}
-          path: .${{inputs.site-folder-path}}/${{env.new_version}}
+          path: .${{inputs.site-folder-path}}/${{inputs.new_version}}
 
       - name: Update latest version path in index.html
         run: |
@@ -73,10 +71,10 @@ jobs:
       - name: Update latest version path in index.html
         run: |
           echo "last version: ${{ env.last_version }}"
-          echo "new version: ${{ env.new_version }}"
+          echo "new version: ${{ inputs.new_version }}"
           cd sites
           ls -la
-          sed -i 's/${{ env.last_version }}/${{env.new_version}}/g' index.html
+          sed -i 's/${{ env.last_version }}/${{inputs.new_version}}/g' index.html
 
           # check if index.html updated 
           if [[ -n $(git status -s index.html) ]]; then
@@ -95,5 +93,5 @@ jobs:
           git config --list
 
           git add .
-          git commit -m "Add new version ${{ env.new_version }} folder and update latest version path in index.html"
+          git commit -m "Add new version ${{ inputs.new_version }} folder and update latest version path in index.html"
           git push

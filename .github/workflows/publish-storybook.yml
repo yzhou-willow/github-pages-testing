@@ -35,8 +35,17 @@ jobs:
           name: storybook
           path: ./taskbox/storybook-static
 
-  download-site:
+  call-workflow:
     needs: upload-site
-    uses: ./.github/workflows/commit-storybook-releases.yml
+    permissions: write-all
+    uses: ./.github/workflows/reusable.yml
     with:
-      new_version: "v9"
+      who-to-greet: "@yzhou-willow"
+      newer-version: ${{ env.new_version }}}
+
+  # download-site:
+  #   needs: upload-site
+  #   permissions: write-all
+  #   uses: ./.github/workflows/release.yml
+  #   with:
+  #     new_version: "v9"
