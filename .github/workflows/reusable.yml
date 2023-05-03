@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Hello ${{ inputs.newer-version }}"
+      - run: echo "Hello ${{ inputs.who-to-greet }}"
 
       - name: Set time
         id: time

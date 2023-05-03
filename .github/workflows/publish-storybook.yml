@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "new_version=test_v1" >> $GITHUB_OUTPUT
+      - run: echo "test_var=jane" >> $GITHUB_OUTPUT
 
   # we could make it only deploy a newer storybook for major/minor version release
   # upload new site folder as artifact
@@ -45,7 +46,7 @@ jobs:
     permissions: write-all
     uses: ./.github/workflows/reusable.yml
     with:
-      who-to-greet: "@yzhou-willow"
+      who-to-greet: ${{ needs.mock-build.outputs.new_version }}
       newer-version: ${{ needs.mock-build.outputs.new_version }}
 
   # download-site:
