@@ -51,6 +51,8 @@ jobs:
     with:
       who-to-greet: "jane"
       new-version: ${{ needs.mock-build.outputs.new_version }}
+    secrets:
+      PAT_FOR_STORYBOOK_PAGES: ${{ secrets.FINE_GRAINED_PAT_FOR_STORYBOOK_PAGES }}
 
   # download-site:
   #   needs:
