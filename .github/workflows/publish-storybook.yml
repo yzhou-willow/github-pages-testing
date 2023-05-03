@@ -22,9 +22,8 @@ concurrency:
 jobs:
   mock-build:
     runs-on: ubuntu-latest
-    steps:
-      - run: echo "new_version=test_v1" >> $GITHUB_OUTPUT
-      - run: echo "test_var=jane" >> $GITHUB_OUTPUT
+    outputs:
+      new_version: ${{ env.new_version }}
 
   # we could make it only deploy a newer storybook for major/minor version release
   # upload new site folder as artifact
@@ -46,7 +45,7 @@ jobs:
     permissions: write-all
     uses: ./.github/workflows/reusable.yml
     with:
-      who-to-greet: ${{ needs.mock-build.outputs.test_var }}
+      who-to-greet: "jane"
       newer-version: ${{ needs.mock-build.outputs.new_version }}
 
   # download-site:
