@@ -39,4 +39,4 @@ jobs:
     needs: upload-site
     uses: ./.github/workflows/commit-storybook-releases.yml
     with:
-      new_version: ${{ env.new_version }}
+      new_version: "v9"
