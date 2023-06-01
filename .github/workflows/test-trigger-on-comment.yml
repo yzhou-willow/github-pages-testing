@@ -33,7 +33,8 @@ jobs:
 
   check-if-need-update:
     runs-on: ubuntu-22.04
-    if: ${{ github.event.issue.pull_request }} && github.event.comment.body == '/update-snapshots'
+    # the comment is on a pull request and the comment body contains '/update-snapshots'
+    if: ${{ github.event.issue.pull_request }} && contains(github.event.comment.body, '/update-snapshots')
     env:
       need_to_update: false
       pull_request_url: ${{ github.event.issue.pull_request.url }}
@@ -47,6 +48,7 @@ jobs:
           echo "pr_number=$(echo  ${{ env.pull_request_url }} | grep -oP '(?<=pulls/)\d+')"
           echo "pull_request_ref=refs/pull/$pr_number/merge" >> $GITHUB_ENV
 
+      - run: echo "ref is ${{ env.pull_request_ref }}"
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
