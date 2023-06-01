@@ -43,12 +43,16 @@ jobs:
       need_to_update: ${{ env.need_to_update }}
       pull_request_ref: ${{ env.pull_request_ref }}
     steps:
-      - name: Make pull request ref
+      - name: Get pull request number
         run: |
           echo "pr_number=$(echo  ${{ env.pull_request_url }} | grep -oP '(?<=pulls/)\d+')"
-          echo "pull_request_ref=refs/pull/${{env.pr_number}}/merge" >> $GITHUB_ENV
+
+      - name: Make pull request ref
+        run: |
+          echo "pull_request_ref=refs/pull/$pr_number/merge" >> $GITHUB_ENV
 
       - run: echo "ref is ${{ env.pull_request_ref }}"
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
