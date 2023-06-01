@@ -45,10 +45,7 @@ jobs:
     steps:
       - name: Get pull request number
         run: |
-          echo "pr_number=$(echo  ${{ env.pull_request_url }} | grep -oP '(?<=pulls/)\d+')"
-
-      - name: Make pull request ref
-        run: |
+          pr_number=$(echo  ${{ env.pull_request_url }} | grep -oP '(?<=pulls/)\d+')
           echo "pull_request_ref=refs/pull/$pr_number/merge" >> $GITHUB_ENV
 
       - run: echo "ref is ${{ env.pull_request_ref }}"
