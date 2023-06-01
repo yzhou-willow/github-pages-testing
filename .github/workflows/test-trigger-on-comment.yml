@@ -33,6 +33,10 @@ jobs:
   need-updates:
     runs-on: ubuntu-22.04
     if: ${{ github.event.issue.pull_request }} && github.event.comment.body == '/update-snapshots'
+    env:
+      need-update: false
+    outputs:
+      need-update: ${{ env.need-update }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -44,18 +48,21 @@ jobs:
       - name: Check if snapshots need to be updated
         id: check-snapshots
         run: |
+          git rev-parse --abbrev-ref HEAD
+
           if git diff --quiet origin/main -- 'design-system/'; then
               echo "No changes in design-system/, no snapshots need to be updated."
               exit 0
           else
               echo "The code in design-system/ has changed compared to the main branch. 
               Will update snapshots."
+              echo "need-update=true" >> $GITHUB_ENV
           fi
 
   update-snapshots-and-commit:
     runs-on: ubuntu-22.04
     needs: need-updates
-    container: mcr.microsoft.com/playwright:v1.34.0-jammy
+    if: ${{ needs.need-updates.outputs.need-update == 'true' }}
     defaults:
       run:
         working-directory: design-system
@@ -80,15 +87,6 @@ jobs:
           node-version: 16
           cache: "npm"
           cache-dependency-path: ${{ env.ROOT_DIRECTORY }}/package-lock.json
-
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ env.ROOT_DIRECTORY }}/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles(format('{0}/package-lock.json', env.ROOT_DIRECTORY)) }}
 
       - name: Add current time in file test.txt
         run: |
