@@ -91,16 +91,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ needs.check-if-need-update.outputs.pull_request_ref }}
           persist-credentials: true
           token: ${{ github.token }}
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: "npm"
-          cache-dependency-path: ${{ env.ROOT_DIRECTORY }}/package-lock.json
 
       - name: Add current time in file test.txt
         run: |
