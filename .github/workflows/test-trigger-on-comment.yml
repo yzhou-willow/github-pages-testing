@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Check trigger comment
         run: |
-          echo "trigger comment: ${{ github.event.comment.body }}"
+          echo "trigger comment: ${{ github.event.comment.body }}, ${{ github.event.comment.author_association }}"
           echo "trigger event: ${{ github.event_name }}, ${{ github.event.issue.repository_url }}, ${{ github.event.issue.url }}, ${{ github.event.issue.id }}"
           echo "trigger PR info: ${{ github.event.issue.pull_request }}, ${{ github.event.issue.pull_request.url }}, ${{ github.event.issue.pull_request.html_url }}"
           echo "current branch: ${{ github.head_ref }}, ${{ github.event.issue.pull_request.head.ref }}"
@@ -105,7 +105,6 @@ jobs:
         shell: bash
         run: |
           # this is required to make git work in the container
-          git config --global --add safe.directory /__w/TwinPlatform/TwinPlatform
 
           # list current branch name
           git rev-parse --abbrev-ref HEAD
