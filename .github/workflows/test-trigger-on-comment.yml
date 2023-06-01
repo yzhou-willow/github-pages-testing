@@ -26,36 +26,56 @@ jobs:
     steps:
       - name: Check trigger comment
         run: |
-          echo "trigger comment: ${{ github.event.comment.body }}"
-          echo "trigger PR info: ${{ github.event.issue.pull_request.url }}, ${{ github.event.issue.pull_request.html_url }}"
-          echo "current branch: ${{ github.head_ref }}"
+          echo "trigger comment: ${{ github.event.comment.body }}, ${{ github.event.comment.author_association }}"
+          echo "trigger event: ${{ github.event_name }}, ${{ github.event.issue.repository_url }}, ${{ github.event.issue.url }}, ${{ github.event.issue.id }}"
+          echo "trigger PR info: ${{ github.event.issue.pull_request }}, ${{ github.event.issue.pull_request.url }}, ${{ github.event.issue.pull_request.html_url }}"
+          echo "current branch: ${{ github.head_ref }}, ${{ github.event.issue.pull_request.head.ref }}"
 
-  need-updates:
+  check-if-need-update:
     runs-on: ubuntu-22.04
-    if: ${{ github.event.issue.pull_request }} && github.event.comment.body == '/update-snapshots'
+    # the comment is on a pull request and the comment body contains '/update-snapshots'
+    if: ${{ github.event.issue.pull_request }} && contains(github.event.comment.body, '/update-snapshots')
+    env:
+      need_to_update: false
+      pull_request_url: ${{ github.event.issue.pull_request.url }}
+      pull_request_ref: undefined
+    outputs:
+      need_to_update: ${{ env.need_to_update }}
+      pull_request_ref: ${{ env.pull_request_ref }}
     steps:
+      - name: Get pull request number
+        run: |
+          pr_number=$(echo  ${{ env.pull_request_url }} | grep -oP '(?<=pulls/)\d+')
+          echo "pull_request_ref=refs/pull/$pr_number/merge" >> $GITHUB_ENV
+
+      - run: echo "ref is ${{ env.pull_request_ref }}"
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ env.pull_request_ref}}
           persist-credentials: true
           token: ${{ github.token }}
 
       - name: Check if snapshots need to be updated
         id: check-snapshots
         run: |
+
+          git rev-parse --abbrev-ref HEAD
+
           if git diff --quiet origin/main -- 'design-system/'; then
               echo "No changes in design-system/, no snapshots need to be updated."
               exit 0
           else
               echo "The code in design-system/ has changed compared to the main branch. 
               Will update snapshots."
+              echo "need_to_update=true" >> $GITHUB_ENV
           fi
 
   update-snapshots-and-commit:
     runs-on: ubuntu-22.04
-    needs: need-updates
-    container: mcr.microsoft.com/playwright:v1.34.0-jammy
+    needs: check-if-need-update
+    if: ${{ needs.check-if-need-update.outputs.need_to_update == 'true' }}
     defaults:
       run:
         working-directory: design-system
@@ -63,6 +83,7 @@ jobs:
       contents: write
     env:
       snapshots_updated: false
+      # pull_request_ref:
     outputs:
       snapshots_updated: ${{ env.snapshots_updated }}
 
@@ -70,25 +91,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ needs.check-if-need-update.outputs.pull_request_ref }}
           persist-credentials: true
           token: ${{ github.token }}
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.14.* # Use the same version as local environment to be able to successfully run npm ci
-          cache: "npm"
-          cache-dependency-path: ${{ env.ROOT_DIRECTORY }}/package-lock.json
-
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ env.ROOT_DIRECTORY }}/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles(format('{0}/package-lock.json', env.ROOT_DIRECTORY)) }}
 
       - name: Add current time in file test.txt
         run: |
@@ -100,7 +105,6 @@ jobs:
         shell: bash
         run: |
           # this is required to make git work in the container
-          git config --global --add safe.directory /__w/TwinPlatform/TwinPlatform
 
           # list current branch name
           git rev-parse --abbrev-ref HEAD
