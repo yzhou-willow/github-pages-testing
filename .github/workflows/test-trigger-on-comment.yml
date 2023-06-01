@@ -1,0 +1,144 @@
+# This workflow is designed to consistently update the visual regression test snapshots
+# in a consistent hardware and software environment.
+# For more detailed reasons, visit: https://dev.azure.com/willowdev/Unified/_workitems/edit/79523
+
+# Triggered by a PR comment containing the text '/update-snapshots', this workflow executes
+# the visual regression snapshot update, commits the snapshot changes to the corresponding PR branch,
+# and posts a comment in the PR indicating the result.
+name: Update Visual Regression Test Snapshots
+
+on:
+  issue_comment:
+    # This event will only trigger a workflow run if the workflow file is on the default branch.
+    types: [created, edited]
+
+env:
+  ROOT_DIRECTORY: design-system
+
+# cancel running jobs if a new job is queued in the same Pull Request
+concurrency:
+  group: Platform UI - ${{ github.workflow }}-${{ github.event.issue.id }}
+  cancel-in-progress: true
+
+jobs:
+  test-job:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check trigger comment
+        run: |
+          echo "trigger comment: ${{ github.event.comment.body }}"
+          echo "trigger PR info: ${{ github.event.issue.pull_request.url }}, ${{ github.event.issue.pull_request.html_url }}"
+          echo "current branch: ${{ github.head_ref }}"
+
+  need-updates:
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.issue.pull_request }} && github.event.comment.body == '/update-snapshots'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
+          token: ${{ github.token }}
+
+      - name: Check if snapshots need to be updated
+        id: check-snapshots
+        run: |
+          if git diff --quiet origin/main -- 'design-system/'; then
+              echo "No changes in design-system/, no snapshots need to be updated."
+              exit 0
+          else
+              echo "The code in design-system/ has changed compared to the main branch. 
+              Will update snapshots."
+          fi
+
+  update-snapshots-and-commit:
+    runs-on: ubuntu-22.04
+    needs: need-updates
+    container: mcr.microsoft.com/playwright:v1.34.0-jammy
+    defaults:
+      run:
+        working-directory: design-system
+    permissions:
+      contents: write
+    env:
+      snapshots_updated: false
+    outputs:
+      snapshots_updated: ${{ env.snapshots_updated }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
+          token: ${{ github.token }}
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.14.* # Use the same version as local environment to be able to successfully run npm ci
+          cache: "npm"
+          cache-dependency-path: ${{ env.ROOT_DIRECTORY }}/package-lock.json
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ${{ env.ROOT_DIRECTORY }}/node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles(format('{0}/package-lock.json', env.ROOT_DIRECTORY)) }}
+
+      - name: Add current time in file test.txt
+        run: |
+          echo "Current time: $(date)" >> test.txt
+          cat test.txt
+
+      - name: Commit and push if changed
+        id: commit
+        shell: bash
+        run: |
+          # this is required to make git work in the container
+          git config --global --add safe.directory /__w/TwinPlatform/TwinPlatform
+
+          # list current branch name
+          git rev-parse --abbrev-ref HEAD
+
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # If there are any changes, commit them and push them.
+          if [[ -n $(git status --porcelain) ]]; then
+            git add .
+            git commit -m "[Bot]: Update visual regression test snapshots"
+            git push
+            echo "snapshots_updated=true" >> $GITHUB_ENV
+          else
+            echo "No changes detected."
+            echo "snapshots_updated=false" >> $GITHUB_ENV
+          fi
+
+  comment-on-pr:
+    needs: update-snapshots-and-commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment on PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            if ('${{ needs.update-snapshots-and-commit.outputs.snapshots_updated }}' == 'true') {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: ':construction: Snapshots updated! :rocket:'
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: ':no_entry: No snapshot changes detected.'
+              })
+            }
