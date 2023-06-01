@@ -29,7 +29,7 @@ jobs:
           echo "trigger comment: ${{ github.event.comment.body }}, ${{ github.event.comment.author_association }}"
           echo "trigger event: ${{ github.event_name }}, ${{ github.event.issue.repository_url }}, ${{ github.event.issue.url }}, ${{ github.event.issue.id }}"
           echo "trigger PR info: ${{ github.event.issue.pull_request }}, ${{ github.event.issue.pull_request.url }}, ${{ github.event.issue.pull_request.html_url }}"
-          echo "current branch: ${{ github.head_ref }}, ${{ github.event.issue.pull_request.head.ref }}"
+          echo "current branch:  ${{ github.head_ref }}, ${{ github.event.issue.pull_request }}"
 
   check-if-need-update:
     runs-on: ubuntu-22.04
@@ -46,7 +46,7 @@ jobs:
       - name: Get pull request number
         run: |
           pr_number=$(echo  ${{ env.pull_request_url }} | grep -oP '(?<=pulls/)\d+')
-          echo "pull_request_ref=refs/pull/$pr_number/merge" >> $GITHUB_ENV
+          echo "pull_request_ref=refs/pull/$pr_number/head" >> $GITHUB_ENV
 
       - run: echo "ref is ${{ env.pull_request_ref }}"
 
@@ -55,6 +55,7 @@ jobs:
         with:
           ref: ${{ env.pull_request_ref}}
           persist-credentials: true
+          fetch-depth: 0
           token: ${{ github.token }}
 
       - name: Check if snapshots need to be updated
