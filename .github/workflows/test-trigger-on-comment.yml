@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: Make pull request ref
         run: |
-          echo "pr_number=$(echo $pull_request_url | grep -oP '(?<=pull/)\d+')"
+          echo "pr_number=$(echo  ${{ env.pull_request_url }} | grep -oP '(?<=pull/)\d+')"
           echo "pull_request_ref=refs/pull/$pr_number/merge" >> $GITHUB_ENV
 
       - name: Checkout repository
