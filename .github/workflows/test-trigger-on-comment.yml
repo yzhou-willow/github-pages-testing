@@ -70,8 +70,8 @@ jobs:
       - name: logs
         run: |
           echo "ref is ${{ env.pull_request_ref }}"
-          echo "repo=${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}" >> "$GITHUB_OUTPUT" 
-          echo "ref=${{ fromJSON(steps.get-pr.outputs.result).head.sha }}" >> "$GITHUB_OUTPUT"
+          echo "repo=${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}" >> $GITHUB_OUTPUT 
+          echo "ref=${{ fromJSON(steps.get-pr.outputs.result).head.sha }}" >> $GITHUB_OUTPUT
 
       - name: Checkout repository
         uses: actions/checkout@v3
