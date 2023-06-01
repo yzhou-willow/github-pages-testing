@@ -27,7 +27,8 @@ jobs:
       - name: Check trigger comment
         run: |
           echo "trigger comment: ${{ github.event.comment.body }}"
-          echo "trigger PR info: ${{ github.event.issue.pull_request.url }}, ${{ github.event.issue.pull_request.html_url }}"
+          echo "trigger event: ${{ github.event_name }}, ${{ github.event.issue }}"
+          echo "trigger PR info: ${{ github.event.issue.pull_request }}, ${{ github.event.issue.pull_request.url }}, ${{ github.event.issue.pull_request.html_url }}"
           echo "current branch: ${{ github.head_ref }}"
 
   need-updates:
