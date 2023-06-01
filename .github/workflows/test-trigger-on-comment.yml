@@ -42,8 +42,8 @@ jobs:
     outputs:
       need_to_update: ${{ env.need_to_update }}
       pull_request_ref: ${{ env.pull_request_ref }}
-      repo: undefined
-      ref: undefined
+      repo: ${{steps.set-variable.outputs.repo}}
+      ref: ${{steps.set-variable.outputs.ref}}
     steps:
       - name: Get pull request number
         run: |
@@ -68,6 +68,7 @@ jobs:
             }
 
       - name: logs
+        id: set-variable
         run: |
           echo "ref is ${{ env.pull_request_ref }}"
           echo "repo=${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}" >> $GITHUB_OUTPUT 
