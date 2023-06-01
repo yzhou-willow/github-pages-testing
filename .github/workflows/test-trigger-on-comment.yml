@@ -21,35 +21,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-job:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Check trigger comment
-        run: |
-          echo "trigger comment: ${{ github.event.comment.body }}, ${{ github.event.comment.author_association }}"
-          echo "trigger event: ${{ github.event_name }}, ${{ github.event.issue.repository_url }}, ${{ github.event.issue.url }}, ${{ github.event.issue.id }}"
-          echo "trigger PR info: ${{ github.event.issue.pull_request }}, ${{ github.event.issue.pull_request.url }}, ${{ github.event.issue.pull_request.html_url }}"
-          echo "current branch:  ${{ github.head_ref }}, ${{ github.event.issue.pull_request }}"
-
   check-if-need-update:
     runs-on: ubuntu-22.04
     # the comment is on a pull request and the comment body contains '/update-snapshots'
     if: ${{ github.event.issue.pull_request }} && contains(github.event.comment.body, '/update-snapshots')
     env:
       need_to_update: false
-      pull_request_url: ${{ github.event.issue.pull_request.url }}
+      # pull_request_url: ${{ github.event.issue.pull_request.url }}
       pull_request_ref: undefined
 
     outputs:
       need_to_update: ${{ env.need_to_update }}
       pull_request_ref: ${{ env.pull_request_ref }}
-      repo: ${{steps.set-variable.outputs.repo}}
-      ref: ${{steps.set-variable.outputs.ref}}
+      # repo: ${{steps.set-variable.outputs.repo}}
+      # ref: ${{steps.set-variable.outputs.ref}}
     steps:
-      - name: Get pull request number
-        run: |
-          pr_number=$(echo  ${{ env.pull_request_url }} | grep -oP '(?<=pulls/)\d+')
-          echo "pull_request_ref=refs/pull/$pr_number/head" >> $GITHUB_ENV
+      # - name: Get pull request number
+      #   run: |
+      #     pr_number=$(echo  ${{ env.pull_request_url }} | grep -oP '(?<=pulls/)\d+')
+      #     echo "pull_request_ref=refs/pull/$pr_number/head" >> $GITHUB_ENV
 
       - uses: actions/github-script@v3
         id: get-pr
@@ -71,17 +61,16 @@ jobs:
       - name: logs
         id: set-variable
         run: |
-          echo "ref is ${{ env.pull_request_ref }}"
-          echo "repo=${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}" >> $GITHUB_OUTPUT 
-          echo "ref=${{ fromJSON(steps.get-pr.outputs.result).head.ref }}" >> $GITHUB_OUTPUT
+          # echo "ref is ${{ env.pull_request_ref }}"
+          echo "pull_request_ref=${{ fromJSON(steps.get-pr.outputs.result).head.ref }}" >> $GITHUB_ENV
+          # echo "repo=${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}" >> $GITHUB_OUTPUT 
+          # echo "ref=${{ fromJSON(steps.get-pr.outputs.result).head.ref }}" >> $GITHUB_OUTPUT
 
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
-          ref: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
+          ref: ${{ env.pull_request_ref }}
           persist-credentials: true
-          fetch-depth: 0
           token: ${{ github.token }}
 
       - name: Check if snapshots need to be updated
@@ -118,8 +107,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ needs.check-if-need-update.outputs.ref }}
-          # repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
+          ref: ${{ needs.check-if-need-update.outputs.pull_request_ref }}
           persist-credentials: true
           token: ${{ github.token }}
 
