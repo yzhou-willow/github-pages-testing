@@ -116,7 +116,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ needs.check-if-need-update.outputs.pull_request_ref }}
+          ref: ${{ needs.check-if-need-update.outputs.ref }}
+          # repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
           persist-credentials: true
           token: ${{ github.token }}
 
