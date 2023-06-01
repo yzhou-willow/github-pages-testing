@@ -29,26 +29,35 @@ jobs:
           echo "trigger comment: ${{ github.event.comment.body }}"
           echo "trigger event: ${{ github.event_name }}, ${{ github.event.issue.repository_url }}, ${{ github.event.issue.url }}"
           echo "trigger PR info: ${{ github.event.issue.pull_request }}, ${{ github.event.issue.pull_request.url }}, ${{ github.event.issue.pull_request.html_url }}"
-          echo "current branch: ${{ github.head_ref }}"
+          echo "current branch: ${{ github.head_ref }}, ${{ github.event.issue.pull_request.head.ref }}"
 
-  need-updates:
+  check-if-need-update:
     runs-on: ubuntu-22.04
     if: ${{ github.event.issue.pull_request }} && github.event.comment.body == '/update-snapshots'
     env:
-      need-update: false
+      need_to_update: false
+      pull_request_url: ${{ github.event.issue.pull_request.url }}
+      pull_request_ref: undefined
     outputs:
-      need-update: ${{ env.need-update }}
+      need_to_update: ${{ env.need_to_update }}
+      pull_request_ref: ${{ env.pull_request_ref }}
     steps:
+      - name: Make pull request ref
+        run: |
+          echo "pr_number=$(echo $PR_URL | grep -oP '(?<=pull/)\d+')" >> $GITHUB_ENV
+          echo "pull_request_ref=refs/pull/${{ env.pr_number }}/merge" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ env.pull_request_ref}}
           persist-credentials: true
           token: ${{ github.token }}
 
       - name: Check if snapshots need to be updated
         id: check-snapshots
         run: |
+
           git rev-parse --abbrev-ref HEAD
 
           if git diff --quiet origin/main -- 'design-system/'; then
@@ -57,13 +66,13 @@ jobs:
           else
               echo "The code in design-system/ has changed compared to the main branch. 
               Will update snapshots."
-              echo "need-update=true" >> $GITHUB_ENV
+              echo "need_to_update=true" >> $GITHUB_ENV
           fi
 
   update-snapshots-and-commit:
     runs-on: ubuntu-22.04
-    needs: need-updates
-    if: ${{ needs.need-updates.outputs.need-update == 'true' }}
+    needs: check-if-need-update
+    if: ${{ needs.check-if-need-update.outputs.need_to_update == 'true' }}
     defaults:
       run:
         working-directory: design-system
@@ -71,6 +80,7 @@ jobs:
       contents: write
     env:
       snapshots_updated: false
+      # pull_request_ref:
     outputs:
       snapshots_updated: ${{ env.snapshots_updated }}
 
