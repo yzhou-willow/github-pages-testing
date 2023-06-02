@@ -98,6 +98,7 @@ jobs:
           ref: ${{ env.pull_request_ref }}
           persist-credentials: true
           token: ${{ github.token }}
+          fetch-depth: 0
 
       - name: Check if snapshots need to be updated
         id: check-snapshots
