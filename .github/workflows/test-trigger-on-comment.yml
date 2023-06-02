@@ -106,7 +106,7 @@ jobs:
 
           git rev-parse --abbrev-ref HEAD
 
-          if git diff --quiet origin -- 'design-system/'; then
+          if git diff --quiet origin/main -- 'design-system/'; then
               echo "No changes in design-system/, no snapshots need to be updated."
               exit 0
           else
