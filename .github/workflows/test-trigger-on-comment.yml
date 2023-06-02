@@ -21,6 +21,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  comment-on-pr-before-start:
+    needs: update-snapshots-and-commit
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Comment on PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: ':rocket: Workflow [${{github.workflow}}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) is successfully triggered. I will comment the result after completion. '
+              })
+
   check-if-need-update:
     runs-on: ubuntu-22.04
     # the comment is on a pull request and the comment body contains '/update-snapshots'
