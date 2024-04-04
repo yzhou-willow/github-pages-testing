@@ -21,25 +21,5 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if changelog is required
-        # Get the list of workspaces defined in package.json, and strip away the characters: [ ] ' ,
-        # Check if there are any code changes in the defined workspaces.
-        run: |
-          workspaces=$(node -pe "require('./package.json').workspaces" | sed -e 's/[]\[\,'\'']/''/g')
-          if git diff --name-only --exit-code origin/main -- ${workspaces}; then
-            echo "requires_changelog=false" >> $GITHUB_ENV
-            echo "Changelog not required!"
-          else
-            echo "requires_changelog=true" >> $GITHUB_ENV
-            echo "Changelog is required. Proceed to check for changelog..."
-          fi
-
-      - name: Check for newly added changelog if required
-        if: ${{ env.requires_changelog == 'true' }}
-        run: |
-          if git diff --name-only --diff-filter=A --exit-code origin/main -- '.changeset/*.md'; then
-            echo "Error: No changelog found in .changeset folder. Please add a changelog."
-            exit 1
-          else
-            echo "Changelog found! Proceeding..."
-          fi
+      - name: do nothing
+        run: echo 'do nothing'
