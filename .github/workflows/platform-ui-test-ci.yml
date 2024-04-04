@@ -31,7 +31,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           persist-credentials: true
-          token: ${{ github.token }}
+          token: ${{ secrets.PAT_FOR_PUSH_COMMIT }}
 
       - name: Setup node
         uses: actions/setup-node@v3
