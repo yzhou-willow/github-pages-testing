@@ -3,9 +3,19 @@ on:
   # Triggers the workflow on pull request events is opened, synchronize, or reopened to Platform UI component folder
   pull_request:
 
+env:
+  ROOT_DIRECTORY: taskbox
+defaults:
+  run:
+    # env variables not working in working-directory
+    working-directory: taskbox
+
 jobs:
   test-commit-and-push:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: taskbox
     permissions:
       contents: write
     env:
@@ -26,9 +36,9 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 16.*
+          node-version: 18.*
           cache: "npm"
-          cache-dependency-path: ./package-lock.json
+          cache-dependency-path: ${{ env.ROOT_DIRECTORY }}/package-lock.json
 
       - name: Cache node_modules
         id: cache-node-modules
@@ -36,7 +46,7 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: ./node_modules
+          path: ${{ env.ROOT_DIRECTORY }}/node_modules
           key: node-modules-${{ runner.os }}-${{ hashFiles(format('{0}/package-lock.json', env.ROOT_DIRECTORY)) }}
 
       - name: Install packages
