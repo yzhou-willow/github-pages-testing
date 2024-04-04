@@ -1,0 +1,72 @@
+name: Platform UI pre merge hooks
+on:
+  # Triggers the workflow on pull request events is opened, synchronize, or reopened to Platform UI component folder
+  pull_request:
+
+env:
+  ROOT_DIRECTORY: design-system
+
+defaults:
+  run:
+    # env variables not working in working-directory
+    working-directory: design-system
+
+jobs:
+  test-commit-and-push:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: design-system
+    permissions:
+      contents: write
+    env:
+      pull_request_ref: undefined
+
+    steps:
+      # - name: Set variables
+      #   run: |
+      #     echo "pull_request_ref=${{ fromJSON(steps.get-pr.outputs.result).head.ref }}" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          persist-credentials: true
+          token: ${{ github.token }}
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.*
+          cache: "npm"
+          cache-dependency-path: ${{ env.ROOT_DIRECTORY }}/package-lock.json
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ${{ env.ROOT_DIRECTORY }}/node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles(format('{0}/package-lock.json', env.ROOT_DIRECTORY)) }}
+
+      - name: Install packages
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Commit and push if changed
+        id: commit
+        shell: bash
+        run: |
+          # this is required to make git work in the container
+          git config --global --add safe.directory /__w/TwinPlatform/TwinPlatform
+
+          # list current branch name
+          git rev-parse --abbrev-ref HEAD
+
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # add empty commit
+          git commit --allow-empty -m "Empty-Commit"
+          git push
