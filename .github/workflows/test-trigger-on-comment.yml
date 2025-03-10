@@ -38,13 +38,15 @@ jobs:
     outputs:
       test_names: ${{ steps.extract_grep.outputs.test_names }}
     steps:
-      - name: Extract --grep value from comment
-        id: extract_grep
+      - name: Extract `--test` value from comment
+        id: extract_flags
         run: |
           COMMENT_BODY="${{ github.event.comment.body }}"
-          # Extract grep value using regex (assuming format: --test="value1|value2")
-          TEST_NAMES=$(echo "$COMMENT_BODY" | grep -oE '--test="[^"]+"' || echo "")
-          echo "Extracted grep value: $TEST_NAMES"
+
+          # Extract --test='...'
+          TEST_NAMES=$(echo "$COMMENT_BODY" | grep -oP "(?<=--test=['\"])[^'\"]+(?=['\"])" || echo "")
+
+          echo "Extracted test names: $TEST_NAMES"
           echo "test_names=$TEST_NAMES" >> "$GITHUB_OUTPUT"
 
       - name: Comment on PR
