@@ -43,8 +43,8 @@ jobs:
         run: |
           COMMENT_BODY="${{ github.event.comment.body }}"
 
-          # Extract the value of --test= no matter if wrapped by single/double quotes
-          TEST_NAMES=$(echo "$COMMENT_BODY" | grep -oP '(?<=--test=)(["'\'']?)([^"'\'']+)\1' || echo "")
+          # Extract the full content inside the quotes of --test= (supports both single and double quotes)
+          TEST_NAMES=$(echo "$COMMENT_BODY" | sed -nE 's/.*--test=(["'\''])(.*)\1.*/\2/p')
 
           echo "Extracted test names: $TEST_NAMES"
           echo "test_names=$TEST_NAMES" >> "$GITHUB_OUTPUT"
