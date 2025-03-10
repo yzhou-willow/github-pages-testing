@@ -44,7 +44,7 @@ jobs:
           COMMENT_BODY="${{ github.event.comment.body }}"
 
           # Extract the full content inside the quotes of --test= (supports both single and double quotes)
-          TEST_NAMES=$(echo "$COMMENT_BODY" | sed -nE "s/.*--test=['\"]([^'\"]*)['\"].*/\1/p")
+          TEST_NAMES="$(echo "$COMMENT_BODY" | sed -nE 's/.*--test=([\"'\''])([^\"'\'']*)\\1.*/\\2/p')"
 
           echo "Extracted test names: $TEST_NAMES"
           echo "test_names=$TEST_NAMES" >> "$GITHUB_OUTPUT"
