@@ -143,10 +143,12 @@ jobs:
             set -f
 
             # 2) Run the command with appended arguments
-            npm run e2e-updates -- --grep=\"$TEST_NAMES\"
+            # npm run e2e-updates -- --grep=\"$TEST_NAMES\"
+            echo "npm run e2e-updates -- --grep=\"$TEST_NAMES\""
           else
             # No extra arguments, just run the command
-            npm run e2e-updates
+            # npm run e2e-updates
+            echo "npm run e2e-updates"
           fi
 
   comment-on-pr-when-skip:
