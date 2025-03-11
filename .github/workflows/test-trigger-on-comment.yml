@@ -44,7 +44,7 @@ jobs:
           # COMMENT_BODY="/update-snapshots --test=popover|modal"
           COMMENT_BODY="${{ github.event.comment.body }}"
 
-          # Extract the full content after --test=
+          # Extract the full content after --test=, and trim the matched string
           TEST_NAMES=$(echo $COMMENT_BODY | sed -e 's/.*--test=\(.*\)/\1/' \
                       | sed -E 's/^[[:space:]]+|[[:space:]]+$//g'
                       )
