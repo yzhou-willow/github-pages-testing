@@ -36,10 +36,10 @@ jobs:
       # Only run if the comment is on a pull request and the comment body contains '/update-snapshots'
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/update-snapshots')
     outputs:
-      test_names: ${{ steps.extract_grep.outputs.test_names }}
+      test_names: ${{ steps.extract_test_names.outputs.test_names }}
     steps:
       - name: Extract `--test` value from comment
-        id: extract_flags
+        id: extract_test_names
         run: |
           # COMMENT_BODY="/update-snapshots --test=popover|modal"
           COMMENT_BODY="${{ github.event.comment.body }}"
