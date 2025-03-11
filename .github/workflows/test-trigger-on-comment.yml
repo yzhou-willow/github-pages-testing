@@ -41,10 +41,11 @@ jobs:
       - name: Extract `--test` value from comment
         id: extract_flags
         run: |
-          echo "Comment body: ${{ github.event.comment.body }}"
+          COMMENT_BODY="/update-snapshots --test=\"popover|modal\""
+          # COMMENT_BODY="${{ github.event.comment.body }}"
 
           # Extract the full content inside the quotes of --test= (supports both single and double quotes)
-          TEST_NAMES=$((printf '%s' \"${COMMENT_BODY}\"  | sed -e 's/.*--test=["'"'"']\(.*\)["'"'"']/\1/')
+          TEST_NAMES=$(echo $COMMENT_BODY | sed -e 's/.*--test=["'"'"']\(.*\)["'"'"']/\1/')
 
           echo "Extracted test names: $TEST_NAMES"
           echo "test_names=$TEST_NAMES" >> "$GITHUB_OUTPUT"
