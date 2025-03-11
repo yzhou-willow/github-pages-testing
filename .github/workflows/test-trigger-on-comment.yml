@@ -143,11 +143,8 @@ jobs:
             # 1) Turn off glob expansion for safety
             set -f
 
-            # 2) Convert the string into an array of separate arguments
-            IFS=' ' read -ra ARGS <<< "${TEST_NAMES}"
-
-            # 3) Run the command with appended arguments
-            npm run e2e-updates -- "--grep=\"${ARGS[@]}\""
+            # 2) Run the command with appended arguments
+            npm run e2e-updates -- --grep=\"$TEST_NAMES\"
           else
             # No extra arguments, just run the command
             npm run e2e-updates
