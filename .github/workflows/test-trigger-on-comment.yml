@@ -42,9 +42,11 @@ jobs:
         id: extract_flags
         run: |
           COMMENT_BODY="${{ github.event.comment.body }}"
-
+          # COMMENT_BODY="/update-snapshots --test="popover2|modal|and whatever test names'"
           # Extract the full content inside the quotes of --test= (supports both single and double quotes)
-          TEST_NAMES=$(echo "$COMMENT_BODY" | sed -nE 's#.*--test=[\"'\''](.*)[\"'\''].*#\1#p')
+          pattern='s#.*--test=["'"'"']\([^"'"'"']+\)["'"'"'].*#\1#p'
+
+          TEST_NAMES=$(echo "$COMMENT_BODY" | sed -nE "$pattern")
 
           echo "Extracted test names: $TEST_NAMES"
           echo "test_names=$TEST_NAMES" >> "$GITHUB_OUTPUT"
