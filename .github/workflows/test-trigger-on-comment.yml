@@ -136,7 +136,7 @@ jobs:
       - name: Run test command with test names
         run: |
           TEST_NAMES="${{ needs.comment-on-pr-before-start.outputs.test_names }}" 
-          # If TEST_NAMES is non-empty, parse it and pass it as multiple arguments
+          # If TEST_NAMES is non-empty, append it to command
           if [ -n "${TEST_NAMES}" ]; then
             echo "Detected extra args: ${TEST_NAMES}"
 
