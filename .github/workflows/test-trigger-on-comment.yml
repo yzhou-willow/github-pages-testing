@@ -45,9 +45,8 @@ jobs:
           COMMENT_BODY="${{ github.event.comment.body }}"
 
           # Extract the full content after --test=, and trim the matched string
-          TEST_NAMES=$(echo $COMMENT_BODY | sed -e 's/.*--test=\(.*\)/\1/' \
-                      | sed -E 's/^[[:space:]]+|[[:space:]]+$//g'
-                      )
+          TEST_NAMES=$(echo "$COMMENT_BODY" | awk -F'--test=' '/--test=/ {gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')
+
 
           echo "Extracted test names: $TEST_NAMES"
           echo "test_names=$TEST_NAMES" >> "$GITHUB_OUTPUT"
