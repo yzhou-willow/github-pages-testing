@@ -44,7 +44,7 @@ jobs:
           # COMMENT_BODY="/update-snapshots --test=popover|modal"
           COMMENT_BODY="${{ github.event.comment.body }}"
 
-          # Extract the full content after --test=, and trim the matched string
+          # Extract the full content after --test=, and trim the matched string including line breaks
           TEST_NAMES=$(echo "$COMMENT_BODY" | awk -F'--test=' '/--test=/ {gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}' | tr -d '\n' | tr -d '\r')
 
 
